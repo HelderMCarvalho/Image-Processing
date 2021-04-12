@@ -3,4 +3,6 @@ project(TP1 C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(TP1 main.c)
+add_executable(TP1 main.c ./vc_lib/vc.h ./vc_lib/vc.c)
+
+target_link_libraries(TP1 m)
