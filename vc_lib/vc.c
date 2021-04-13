@@ -552,9 +552,9 @@ int vc_rgb_get_red_gray(IVC *src_dst) {
     // Generate image
     int size = src_dst->width * src_dst->height * src_dst->channels;
     for (int pos = 0; pos < size; pos += src_dst->channels) {
-        unsigned char r = (unsigned char) src_dst->data[pos];
-        src_dst->data[pos + 1] = r;
-        src_dst->data[pos + 2] = r;
+        // Red value is in pos
+        src_dst->data[pos + 1] = src_dst->data[pos];
+        src_dst->data[pos + 2] = src_dst->data[pos];
     }
     return 1;
 }
@@ -572,9 +572,9 @@ int vc_rgb_get_green_gray(IVC *src_dst) {
     // Generate image
     int size = src_dst->width * src_dst->height * src_dst->channels;
     for (int pos = 0; pos < size; pos += src_dst->channels) {
-        unsigned char g = (unsigned char) src_dst->data[pos + 1];
-        src_dst->data[pos] = g;
-        src_dst->data[pos + 2] = g;
+        // Green value is in pos + 1
+        src_dst->data[pos] = src_dst->data[pos + 1];
+        src_dst->data[pos + 2] = src_dst->data[pos + 1];
     }
     return 1;
 }
@@ -592,9 +592,9 @@ int vc_rgb_get_blue_gray(IVC *src_dst) {
     // Generate image
     int size = src_dst->width * src_dst->height * src_dst->channels;
     for (int pos = 0; pos < size; pos += src_dst->channels) {
-        unsigned char b = (unsigned char) src_dst->data[pos + 2];
-        src_dst->data[pos] = b;
-        src_dst->data[pos + 1] = b;
+        // Blue value is in pos + 2
+        src_dst->data[pos] = src_dst->data[pos + 2];
+        src_dst->data[pos + 1] = src_dst->data[pos + 2];
     }
     return 1;
 }
@@ -640,27 +640,27 @@ int vc_rgb_to_hsv(IVC *src, IVC *dst) {
     int size = src->width * src->height * src->channels;
     for (int pos = 0; pos < size; pos += src->channels) {
         float r = (float) src->data[pos], g = (float) src->data[pos + 1], b = (float) src->data[pos + 2],
-                max = fmaxf(r, fmaxf(g, b)), min = fminf(r, fminf(g, b)), sat, hue = 0;
-        if (max == 0.0f)
+                max_v = fmaxf(r, fmaxf(g, b)), min_v = fminf(r, fminf(g, b)), sat, hue = 0;
+        if (max_v == 0.0f)
             sat = hue = 0.0f;
         else {
-            sat = (max - min) / max;
+            sat = (max_v - min_v) / max_v;
             if (sat == 0.0f)
                 hue = 0.0f;
             else {
-                if ((max == r) && (g >= b))
-                    hue = 60.0f * (g - b) / (max - min);
-                else if ((max == r) && (b > g))
-                    hue = 360.0f + 60.0f * (g - b) / (max - min);
-                else if (max == g)
-                    hue = 120.0f + 60.0f * (b - r) / (max - min);
-                else if (max == b)
-                    hue = 240.0f + 60.0f * (r - g) / (max - min);
+                if ((max_v == r) && (g >= b))
+                    hue = 60.0f * (g - b) / (max_v - min_v);
+                else if ((max_v == r) && (b > g))
+                    hue = 360.0f + 60.0f * (g - b) / (max_v - min_v);
+                else if (max_v == g)
+                    hue = 120.0f + 60.0f * (b - r) / (max_v - min_v);
+                else if (max_v == b)
+                    hue = 240.0f + 60.0f * (r - g) / (max_v - min_v);
             }
         }
         dst->data[pos] = (unsigned char) (hue / 360.0f * 255.0f);
         dst->data[pos + 1] = (unsigned char) (sat * 255.0f);
-        dst->data[pos + 2] = (unsigned char) max;
+        dst->data[pos + 2] = (unsigned char) max_v;
     }
     return 1;
 }
@@ -669,15 +669,15 @@ int vc_rgb_to_hsv(IVC *src, IVC *dst) {
  * Segment an HSV image
  * @param src -> Image to segment
  * @param dst -> Segmented image
- * @param hmin -> Minimum Hue
- * @param hmax -> Maximum Hue
- * @param smin -> Minimum Saturation
- * @param smax -> Maximum Saturation
- * @param vmin -> Minimum Value
- * @param vmax -> Maximum Value
+ * @param h_min -> Minimum Hue
+ * @param h_max -> Maximum Hue
+ * @param s_min -> Minimum Saturation
+ * @param s_max -> Maximum Saturation
+ * @param v_min -> Minimum Value
+ * @param v_max -> Maximum Value
  * @return -> 0 (Error) ou 1 (Successes)
  */
-int vc_hsv_segmentation(IVC *src, IVC *dst, int hmin, int hmax, int smin, int smax, int vmin, int vmax) {
+int vc_hsv_segmentation(IVC *src, IVC *dst, int h_min, int h_max, int s_min, int s_max, int v_min, int v_max) {
     // Error check
     if ((src->width <= 0) || (src->height <= 0) || (src->data == NULL) || (dst->data == NULL)) return 0;
     if ((src->width != dst->width) || (src->height != dst->height)) return 0;
@@ -691,7 +691,7 @@ int vc_hsv_segmentation(IVC *src, IVC *dst, int hmin, int hmax, int smin, int sm
             int h = (int) ((float) (src->data[pos_src]) / 255.0f * 360.0f),
                     s = (int) ((float) (src->data[pos_src + 1]) / 255.0f * 100.0f),
                     v = (int) ((float) (src->data[pos_src + 2]) / 255.0f * 100.0f);
-            if ((h >= hmin && h <= hmax) && (s >= smin && s <= smax) && (v >= vmin && v <= vmax))
+            if ((h >= h_min && h <= h_max) && (s >= s_min && s <= s_max) && (v >= v_min && v <= v_max))
                 dst->data[pos_dst] = (unsigned char) 255;
             else
                 dst->data[pos_dst] = (unsigned char) 0;
@@ -862,7 +862,8 @@ OVC *vc_binary_blob_labelling(IVC *src, IVC *dst, int *n_labels) {
     // All background pixels need to have value 0.
     // All foreground pixels need to have value 255.
     // Labels will be attributed with values [1,254].
-    for (long int i = 0, size = dst->width * dst->height * dst->channels; i < size; i += dst->channels) {
+    long int size = size = dst->width * dst->height * dst->channels;
+    for (long int i = 0; i < size; i += dst->channels) {
         if (dst->data[i] != 0)
             dst->data[i] = 255;
     }
@@ -880,6 +881,10 @@ OVC *vc_binary_blob_labelling(IVC *src, IVC *dst, int *n_labels) {
                     posD = (x - 1 >= 0) ? y * dst->bytesperline + (x - 1) * dst->channels : -1;
             // If pixel isn't black.
             if (dst->data[posX] != (unsigned char) 0) {
+                /*
+                 * A B C
+                 * D X
+                 */
                 // Check if neighborhood pixels exist or if they are black.
                 if ((posA == -1 || (dst->data[posA] == (unsigned char) 0)) &&
                     (posB == -1 || (dst->data[posB] == (unsigned char) 0)) &&
@@ -943,7 +948,7 @@ OVC *vc_binary_blob_labelling(IVC *src, IVC *dst, int *n_labels) {
     }
 
     // Labels the image again.
-    for (long int i = 0, size = dst->width * dst->height * dst->channels; i < size; i += dst->channels) {
+    for (long int i = 0; i < size; i += dst->channels) {
         if (dst->data[i] != 0)
             dst->data[i] = label_table[dst->data[i]];
     }
@@ -998,9 +1003,9 @@ int vc_binary_blob_info(IVC *src, OVC *blobs, int n_blobs) {
         long int sum_x = 0, sum_y = 0;
         blobs[i].area = 0;
 
-        // Colocar a verificar pixeis das bordas (neste momento ignora a 1ª e ultima linha e coluna)
-        for (int y = 1; y < src->height - 1; y++) {
-            for (int x = 1; x < src->width - 1; x++) {
+        long int pos_max = (src->height - 1) * src->bytesperline + (src->width - 1) * src->bytesperline;
+        for (int y = 0; y < src->height; y++) {
+            for (int x = 0; x < src->width; x++) {
                 long int pos = y * src->bytesperline + x * src->channels;
                 if (src->data[pos] == blobs[i].label) {
                     // Area
@@ -1017,12 +1022,21 @@ int vc_binary_blob_info(IVC *src, OVC *blobs, int n_blobs) {
                     y_max = max(y_max, y);
 
                     // Perimeter
-                    // If at least one of the four neighbours doesn't belong to the same label, then its a contour pixel.
-                    if ((src->data[pos - 1] != blobs[i].label) || (src->data[pos + 1] != blobs[i].label) ||
-                        (src->data[pos - src->bytesperline] != blobs[i].label) ||
-                        (src->data[pos + src->bytesperline] != blobs[i].label)) {
+                    long int posA = (pos - 1 >= 0) ? pos - 1 : -1, posB = (pos + 1 < pos_max) ? pos + 1 : -1,
+                            posC = (pos - src->bytesperline >= 0) ? pos - src->bytesperline : -1,
+                            posD = (pos + src->bytesperline < pos_max) ? pos + src->bytesperline : -1;
+                    /*
+                     *   C
+                     * A   B
+                     *   D
+                     */
+                    // If at least one of the four neighbours doesn't belong to the same label or doesn't exist, then
+                    // its a contour pixel.
+                    if ((posA == -1 || src->data[posA] != blobs[i].label) ||
+                        (posB == -1 || src->data[posB] != blobs[i].label) ||
+                        (posC == -1 || src->data[posC] != blobs[i].label) ||
+                        (posD == -1 || src->data[posD] != blobs[i].label))
                         blobs[i].perimeter++;
-                    }
                 }
             }
         }
