@@ -78,7 +78,7 @@ char *netpbm_get_token(FILE *file, char *tok, int len) {
 
     if (c != EOF) {
         do {
-            *t++ = c;
+            *t++ = (char )c;
             c = getc(file);
         } while ((!isspace(c)) && (c != '#') && (c != EOF) && (t - tok < len - 1));
 
@@ -90,7 +90,7 @@ char *netpbm_get_token(FILE *file, char *tok, int len) {
     return tok;
 }
 
-long int unsigned_char_to_bit(unsigned char *datauchar, unsigned char *databit, int width, int height) {
+long int unsigned_char_to_bit(const unsigned char *datauchar, unsigned char *databit, int width, int height) {
     int x, y;
     int countbits;
     long int pos, counttotalbytes;
@@ -213,10 +213,10 @@ IVC *vc_read_image(char *filename) {
             if (tmp == NULL) return 0;
 
 #ifdef VC_DEBUG
-            printf("\nchannels=%d w=%d h=%d levels=%d\n", image->channels, image->width, image->height, levels);
+            printf("Width = %d | Height = %d | Channels = %d | Levels = %d\n", image->width, image->height, image->channels, image->levels);
 #endif
 
-            if ((v = fread(tmp, sizeof(unsigned char), sizeofbinarydata, file)) != sizeofbinarydata) {
+            if ((v = (int)fread(tmp, sizeof(unsigned char), sizeofbinarydata, file)) != sizeofbinarydata) {
 #ifdef VC_DEBUG
                 printf("ERROR -> vc_read_image():\n\tPremature EOF on file.\n");
 #endif
@@ -248,12 +248,12 @@ IVC *vc_read_image(char *filename) {
             if (image == NULL) return NULL;
 
 #ifdef VC_DEBUG
-            printf("\nchannels=%d w=%d h=%d levels=%d\n", image->channels, image->width, image->height, levels);
+            printf("Width = %d | Height = %d | Channels = %d | Levels = %d\n", image->width, image->height, image->channels, image->levels);
 #endif
 
             size = image->width * image->height * image->channels;
 
-            if ((v = fread(image->data, sizeof(unsigned char), size, file)) != size) {
+            if ((v = (int)fread(image->data, sizeof(unsigned char), size, file)) != size) {
 #ifdef VC_DEBUG
                 printf("ERROR -> vc_read_image():\n\tPremature EOF on file.\n");
 #endif
@@ -324,7 +324,7 @@ int vc_write_image(char *filename, IVC *image) {
 }
 
 //
-// Created by Helder Carvalho on 07/03/2021.
+// Created by Helder Carvalho, Leandro Faria and João Castro on 13/04/2021.
 //
 
 /**
@@ -483,7 +483,7 @@ int vc_gray_histogram_show(IVC *src, IVC *dst) {
     if ((dst->width != 256) || (dst->height != 256)) return 0;
     if ((src->channels != 1) || (dst->channels != 1)) return 0;
 
-    // Get the total quantity of pixels (with 1 channel image it's the same as the src_size of the image)
+    // Get the total quantity of pixels
     int src_size = src->width * src->height * src->channels;
 
     // Count the quantity of pixels for each brightness level
@@ -493,7 +493,7 @@ int vc_gray_histogram_show(IVC *src, IVC *dst) {
         bright_count[src->data[pos]]++;
     }
 
-    // Calculate the Probability Density Function for each brightness level
+    // Calculate the Probability Density Function for each brightness level and gets the max PDF value
     float pdf[256] = {0.0f}, pdf_max = 0.0f;
     for (int i = 0; i <= 255; i++) {
         pdf[i] = (float) bright_count[i] / (float) src_size;
@@ -507,14 +507,63 @@ int vc_gray_histogram_show(IVC *src, IVC *dst) {
     }
 
     // Set all the pixels of the dst image to black
-    int dst_size = dst->width * dst->height * dst->channels;
-    for (int pos = 0; pos < dst_size; pos += dst->channels)
+    for (int pos = 0, dst_size = dst->width * dst->height * dst->channels; pos < dst_size; pos += dst->channels)
         dst->data[pos] = 0;
 
     // Create the histogram
     for (int x = 0; x < dst->width; x++)
-        for (int y = dst->height - 1; (float) y > (float) (dst->height - 1) - pdf_normalized[x] * 255; y--)
-            dst->data[y * 256 + x] = 255;
+        for (int y = dst->height - 1;
+             (float) y > (float) (dst->height - 1) - pdf_normalized[x] * (float) (dst->width - 1); y--)
+            dst->data[y * dst->bytesperline + x] = 255;
+
+    return 1;
+}
+
+/**
+ * Equalizes the histogram of a Gray image
+ * @param src -> Image to equalize
+ * @param dst -> Equalized image
+ * @return -> 0 (Error) ou 1 (Successes)
+ */
+int vc_gray_histogram_equalization(IVC *src, IVC *dst) {
+    // Error check
+    if ((src->width <= 0) || (src->height <= 0) || (src->data == NULL) || (dst->data == NULL)) return 0;
+    if ((src->width != dst->width) || (src->height != dst->height) || (src->channels != dst->channels)) return 0;
+    if ((src->channels != 1) || (dst->channels != 1)) return 0;
+
+    // Get the total quantity of pixels (with 1 channel image it's the same as the src_size of the image)
+    int src_size = src->width * src->height * src->channels;
+
+    // Count the quantity of pixels for each brightness level
+    int bright_count[256] = {0};
+    for (int pos = 0; pos < src_size; pos += src->channels) {
+        // The position in bright_count is the value of the pixel brightness
+        bright_count[src->data[pos]]++;
+    }
+
+    // Calculate the Probability Density Function for each brightness level and the sum of the PDF to Cumulative Density
+    // Function (CDF).
+    float pdf[256] = {0.0f}, cdf[256] = {0.0f};
+    // First calculate for the position 0
+    pdf[0] = (float) bright_count[0] / (float) src_size;
+    cdf[0] = pdf[0];
+    // Now calculate for the rest of the positions
+    for (int i = 1; i <= 255; i++) {
+        pdf[i] = (float) bright_count[i] / (float) src_size;
+        cdf[i] = cdf[i - 1] + pdf[i];
+    }
+
+    // Get the first value of CDF greater than 0
+    float cdf_min = cdf[0];
+    for (int i = 0; i <= 255; i++)
+        if (cdf[i] > 0.0f) {
+            cdf_min = cdf[i];
+            break;
+        }
+
+    for (int pos = 0; pos < src_size; pos += src->channels) {
+        dst->data[pos] = (unsigned char) ((cdf[src->data[pos]] - cdf_min) / (1.0f - cdf_min) * 255.0f);
+    }
 
     return 1;
 }
@@ -1011,7 +1060,7 @@ int vc_binary_blob_info(IVC *src, OVC *blobs, int n_blobs) {
                     // Area
                     blobs[i].area++;
 
-                    // Center of Gravity
+                    // Center of Mass
                     sum_x += x;
                     sum_y += y;
 
@@ -1041,7 +1090,7 @@ int vc_binary_blob_info(IVC *src, OVC *blobs, int n_blobs) {
             }
         }
 
-        // Center of Gravity
+        // Center of Mass
         blobs[i].xc = (int) round((double) sum_x / max(blobs[i].area, 1));
         blobs[i].yc = (int) round((double) sum_y / max(blobs[i].area, 1));
 

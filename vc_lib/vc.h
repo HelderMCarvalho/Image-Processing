@@ -1,3 +1,5 @@
+#ifndef TP1_VC_H
+#define TP1_VC_H
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //           INSTITUTO POLITÉCNICO DO CÁVADO E DO AVE
 //                          2011/2012
@@ -6,8 +8,6 @@
 //
 //             [  DUARTE DUQUE - dduque@ipca.pt  ]
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#ifndef TP1_VC_H
-#define TP1_VC_H
 
 #define VC_DEBUG
 
@@ -48,7 +48,7 @@ IVC *vc_read_image(char *filename);
 int vc_write_image(char *filename, IVC *image);
 
 //
-// Created by Helder Carvalho on 07/03/2021.
+// Created by Helder Carvalho, Leandro Faria and João Castro on 13/04/2021.
 //
 
 // FUNCTIONS GRAY
@@ -64,6 +64,8 @@ int vc_gray_to_binary_neighborhood_midpoint(IVC *src, IVC *dst, int kernel);
 
 int vc_gray_histogram_show(IVC *src, IVC *dst);
 
+int vc_gray_histogram_equalization(IVC *src, IVC *dst);
+
 // FUNCTIONS RGB
 int vc_rgb_negative(IVC *src_dst);
 
@@ -78,7 +80,7 @@ int vc_rgb_to_gray(IVC *src, IVC *dst);
 int vc_rgb_to_hsv(IVC *src, IVC *dst);
 
 // FUNCTIONS HSV
-int vc_hsv_segmentation(IVC *src, IVC *dst, int hmin, int hmax, int smin, int smax, int vmin, int vmax);
+int vc_hsv_segmentation(IVC *src, IVC *dst, int h_min, int h_max, int s_min, int s_max, int v_min, int v_max);
 
 // FUNCTIONS BINARY
 int vc_binary_dilate(IVC *src, IVC *dst, int kernel);
