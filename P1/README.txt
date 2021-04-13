@@ -13,4 +13,7 @@ A imagem (img1.ppm) apresenta uma imagem de uma ressonância magnética realizada 
 
 
 OBJECTIVOS:
-Este trabalho tem como objectivo desenvolver um programa em linguagem C, que processe  a imagem fornecida, de modo a calcular a área do cérebro (a aplicação deverá excluir os píxeis do crânio), perímetro e respetivo centro de massa. A aplicação deverá, ainda, produzir uma imagem semelhante à de entrada, mas que apresente apenas o cérebro, isto é, removendo a estrutura do crânio.
+Este trabalho tem como objectivo desenvolver um programa em linguagem C, que processe  a imagem fornecida, de modo a
+calcular a área do cérebro (a aplicação deverá excluir os píxeis do crânio), perímetro e respetivo centro de massa. A
+aplicação deverá, ainda, produzir uma imagem semelhante à de entrada, mas que apresente apenas o cérebro, isto é,
+removendo a estrutura do crânio.

@@ -1,3 +1,6 @@
+./FilterGear.ini
+./P1/Output/P*
+./P2/Output/P*
 
 # Created by https://www.toptal.com/developers/gitignore/api/c,windows,cmake,clion
 # Edit at https://www.toptal.com/developers/gitignore?templates=c,windows,cmake,clion

@@ -472,6 +472,54 @@ int vc_gray_to_binary_neighborhood_midpoint(IVC *src, IVC *dst, int kernel) {
 }
 
 /**
+ * Creates a Histogram of a Gray image
+ * @param src -> Image to create the Histogram for
+ * @param dst -> Histogram in image format
+ * @return -> 0 (Error) ou 1 (Successes)
+ */
+int vc_gray_histogram_show(IVC *src, IVC *dst) {
+    // Error check
+    if ((src->width <= 0) || (src->height <= 0) || (src->data == NULL) || (dst->data == NULL)) return 0;
+    if ((dst->width != 256) || (dst->height != 256)) return 0;
+    if ((src->channels != 1) || (dst->channels != 1)) return 0;
+
+    // Get the total quantity of pixels (with 1 channel image it's the same as the src_size of the image)
+    int src_size = src->width * src->height * src->channels;
+
+    // Count the quantity of pixels for each brightness level
+    int bright_count[256] = {0};
+    for (int pos = 0; pos < src_size; pos += src->channels) {
+        // The position in bright_count is the value of the pixel brightness
+        bright_count[src->data[pos]]++;
+    }
+
+    // Calculate the Probability Density Function for each brightness level
+    float pdf[256] = {0.0f}, pdf_max = 0.0f;
+    for (int i = 0; i <= 255; i++) {
+        pdf[i] = (float) bright_count[i] / (float) src_size;
+        pdf_max = max(pdf_max, pdf[i]);
+    }
+
+    // Calculate the Normalized value of each element of the Probability Density Function, between 0 and 1
+    float pdf_normalized[256] = {0.0f};
+    for (int i = 0; i <= 255; i++) {
+        pdf_normalized[i] = pdf[i] / pdf_max;
+    }
+
+    // Set all the pixels of the dst image to black
+    int dst_size = dst->width * dst->height * dst->channels;
+    for (int pos = 0; pos < dst_size; pos += dst->channels)
+        dst->data[pos] = 0;
+
+    // Create the histogram
+    for (int x = 0; x < dst->width; x++)
+        for (int y = dst->height - 1; (float) y > (float) (dst->height - 1) - pdf_normalized[x] * 255; y--)
+            dst->data[y * 256 + x] = 255;
+
+    return 1;
+}
+
+/**
  * Convert an RGB image to a Negative
  * @param src_dst -> Image In and Out
  * @return -> 0 (Error) ou 1 (Successes)
@@ -950,6 +998,7 @@ int vc_binary_blob_info(IVC *src, OVC *blobs, int n_blobs) {
         long int sum_x = 0, sum_y = 0;
         blobs[i].area = 0;
 
+        // Colocar a verificar pixeis das bordas (neste momento ignora a 1ª e ultima linha e coluna)
         for (int y = 1; y < src->height - 1; y++) {
             for (int x = 1; x < src->width - 1; x++) {
                 long int pos = y * src->bytesperline + x * src->channels;
@@ -979,8 +1028,8 @@ int vc_binary_blob_info(IVC *src, OVC *blobs, int n_blobs) {
         }
 
         // Center of Gravity
-        blobs[i].xc = sum_x / max(blobs[i].area, 1);
-        blobs[i].yc = sum_y / max(blobs[i].area, 1);
+        blobs[i].xc = (int) round((double) sum_x / max(blobs[i].area, 1));
+        blobs[i].yc = (int) round((double) sum_y / max(blobs[i].area, 1));
 
         // Bounding Box
         blobs[i].x = x_min;

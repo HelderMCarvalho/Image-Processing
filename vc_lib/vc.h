@@ -6,6 +6,8 @@
 //
 //             [  DUARTE DUQUE - dduque@ipca.pt  ]
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#ifndef TP1_VC_H
+#define TP1_VC_H
 
 #define VC_DEBUG
 
@@ -60,6 +62,8 @@ int vc_gray_to_binary_global_mean(IVC *src, IVC *dst);
 
 int vc_gray_to_binary_neighborhood_midpoint(IVC *src, IVC *dst, int kernel);
 
+int vc_gray_histogram_show(IVC *src, IVC *dst);
+
 // FUNCTIONS RGB
 int vc_rgb_negative(IVC *src_dst);
 
@@ -88,3 +92,5 @@ int vc_binary_close(IVC *src, IVC *dst, int kernel_erode, int kernel_dilate);
 OVC *vc_binary_blob_labelling(IVC *src, IVC *dst, int *n_labels);
 
 int vc_binary_blob_info(IVC *src, OVC *blobs, int n_blobs);
+
+#endif //TP1_VC_H
