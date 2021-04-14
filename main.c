@@ -7,8 +7,50 @@
 #include "./vc_lib/vc.h"
 #include "./helpers/helpers.h"
 
+int P1();
+
+int P2();
+
 int main() {
-    // P1
+    int op;
+    do {
+        system("@cls||clear");
+        printf("===================== VC TP1 ====================\n");
+        printf("= Helder Carvalho | Leandro Faria | Joao Castro =\n");
+        printf("\nChoose an option:\n");
+        printf("1 - P1\n");
+        printf("2 - P2\n");
+        printf("3 - Exit\n");
+        printf("Option: ");
+        scanf("%i", &op);
+        printf("\n\n");
+        switch (op) {
+            default: {
+                printf("Invalid Option!\n\n");
+                system("pause");
+                break;
+            }
+            case 1: {
+                if (!P1())
+                    printf("P1 Error!\n\n");
+                system("pause");
+                break;
+            }
+            case 2: {
+                if (!P2())
+                    printf("P2 Error!\n\n");
+                system("pause");
+                break;
+            }
+            case 3:
+                break;
+        }
+    } while (op != 3);
+
+    return 0;
+}
+
+int P1() {
     IVC *image[7];
     image[0] = vc_read_image("../P1/img1.pgm");
     if (image[0] == NULL) {
@@ -92,10 +134,10 @@ int main() {
             return 0;
         } else {
             // Prints the information about the brain (its the only existing object (label) in the labeled image[6])
-            printf("BRAIN:\n");
+            printf("\nBRAIN:\n");
             printf("\tArea: %d\n", blobs->area);
             printf("\tPerimeter: %d\n", blobs->perimeter);
-            printf("\tCenter of mass: x = %d | y = %d\n", blobs->xc, blobs->yc);
+            printf("\tCenter of mass: x = %d | y = %d\n\n", blobs->xc, blobs->yc);
         }
     }
 
@@ -117,7 +159,11 @@ int main() {
 //    system("cmd /c start ..\\FilterGear.exe ../P1/Output/P13.pgm");
 //    system("cmd /c start ..\\FilterGear.exe ../P1/Output/P14.pgm");
     system("cmd /c start ..\\FilterGear.exe ../P1/Output/P1.pgm");
+    return 1;
+}
 
+int P2() {
+    printf("\nP2\n");
 
-    return 0;
+    return 1;
 }
