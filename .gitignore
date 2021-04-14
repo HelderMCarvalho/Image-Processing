@@ -1,5 +1,5 @@
 FilterGear.ini
-P?/Output/P*.pgm
+P?/Output/P*.p?m
 P?/*.pdf
 
 # Created by https://www.toptal.com/developers/gitignore/api/c,windows,cmake,clion

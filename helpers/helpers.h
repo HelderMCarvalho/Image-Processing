@@ -9,4 +9,10 @@
 
 int vc_gray_extract_binary(IVC *src, IVC *mask, IVC *dst);
 
+int vc_rgb_extract_binary(IVC *src, IVC *mask, IVC *dst);
+
+int vc_rgb_draw_center_of_mass(IVC *src_dst, OVC *blob);
+
+int vc_rgb_draw_bounding_box(IVC *src_dst, OVC *blob);
+
 #endif //TP1_HELPERS_H
