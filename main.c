@@ -146,13 +146,8 @@ int P1() {
 //    vc_write_image("../P1/Output/P13.pgm", image[3]);
 //    vc_write_image("../P1/Output/P14.pgm", image[4]);
     vc_write_image("../P1/Output/P1.pgm", image[5]);
-    vc_image_free(image[0]);
-    vc_image_free(image[1]);
-    vc_image_free(image[2]);
-    vc_image_free(image[3]);
-    vc_image_free(image[4]);
-    vc_image_free(image[5]);
-    vc_image_free(image[6]);
+    for (int i = 0; i <= 6; i++)
+        vc_image_free(image[i]);
     system("cmd /c start ..\\FilterGear.exe ../P1/img1.pgm");
 //    system("cmd /c start ..\\FilterGear.exe ../P1/Output/P11.pgm");
 //    system("cmd /c start ..\\FilterGear.exe ../P1/Output/P12.pgm");
@@ -289,15 +284,8 @@ int P2() {
 //    vc_write_image("../P2/Output/P25.pgm", image[5]);
 //    vc_write_image("../P2/Output/P26.pgm", image[6]);
     vc_write_image("../P2/Output/P2.ppm", image[8]);
-    vc_image_free(image[0]);
-    vc_image_free(image[1]);
-    vc_image_free(image[2]);
-    vc_image_free(image[3]);
-    vc_image_free(image[4]);
-    vc_image_free(image[5]);
-    vc_image_free(image[6]);
-    vc_image_free(image[7]);
-    vc_image_free(image[8]);
+    for (int i = 0; i <= 8; i++)
+        vc_image_free(image[i]);
     system("cmd /c start ..\\FilterGear.exe ../P2/img2.ppm");
 //    system("cmd /c start ..\\FilterGear.exe ../P2/Output/P21.pgm");
 //    system("cmd /c start ..\\FilterGear.exe ../P2/Output/P22.pgm");

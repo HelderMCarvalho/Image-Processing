@@ -741,9 +741,9 @@ int vc_hsv_segmentation(IVC *src, IVC *dst, int h_min, int h_max, int s_min, int
                     s = (int) ((float) (src->data[pos_src + 1]) / 255.0f * 100.0f),
                     v = (int) ((float) (src->data[pos_src + 2]) / 255.0f * 100.0f);
             if ((h >= h_min && h <= h_max) && (s >= s_min && s <= s_max) && (v >= v_min && v <= v_max))
-                dst->data[pos_dst] = (unsigned char) 255;
+                dst->data[pos_dst] = 255;
             else
-                dst->data[pos_dst] = (unsigned char) 0;
+                dst->data[pos_dst] = 0;
         }
     }
     return 1;
@@ -772,7 +772,7 @@ int vc_binary_dilate(IVC *src, IVC *dst, int kernel) {
                     for (int ky = (y - k_movement), ky_max = y + k_movement; ky <= ky_max; ++ky) {
                         if ((ky >= 0) && (ky < src->height)) {
                             int pos_k = ky * src->bytesperline + kx * src->channels;
-                            if (src->data[pos_k] == (unsigned char) 255) {
+                            if (src->data[pos_k] == 255) {
                                 level = 1;
                                 break;
                             }
@@ -783,9 +783,9 @@ int vc_binary_dilate(IVC *src, IVC *dst, int kernel) {
                 }
             }
             if (level)
-                dst->data[pos] = (unsigned char) 255;
+                dst->data[pos] = 255;
             else
-                dst->data[pos] = (unsigned char) 0;
+                dst->data[pos] = 0;
         }
     }
     return 1;
@@ -814,7 +814,7 @@ int vc_binary_erode(IVC *src, IVC *dst, int kernel) {
                     for (int ky = (y - k_movement), ky_max = y + k_movement; ky <= y + k_movement; ky++) {
                         if ((ky >= 0) && (ky < src->height)) {
                             int pos_k = ky * src->bytesperline + kx * src->channels;
-                            if (src->data[pos_k] == (unsigned char) 0) {
+                            if (src->data[pos_k] == 0) {
                                 level = 1;
                                 break;
                             }
@@ -825,9 +825,9 @@ int vc_binary_erode(IVC *src, IVC *dst, int kernel) {
                 }
             }
             if (level)
-                dst->data[pos] = (unsigned char) 0;
+                dst->data[pos] = 0;
             else
-                dst->data[pos] = (unsigned char) 255;
+                dst->data[pos] = 255;
         }
     }
     return 1;
