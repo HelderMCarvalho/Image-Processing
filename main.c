@@ -7,6 +7,8 @@
 #include "./vc_lib/vc.h"
 #include "./helpers/helpers.h"
 
+#define NEWIMAGE(image) (vc_image_new(image->width, image->height, image->channels, image->levels))
+
 int P1();
 
 int P2();
@@ -51,45 +53,24 @@ int main() {
 }
 
 int P1() {
-    IVC *image[7];
+    int image_quant = 7;
+    IVC *image[image_quant];
     image[0] = vc_read_image("../P1/img1.pgm");
     if (image[0] == NULL) {
         printf("IMAGE 0 == NULL\n");
         return 0;
     }
-    image[1] = vc_image_new(image[0]->width, image[0]->height, image[0]->channels, image[0]->levels);
-    if (image[1] == NULL) {
-        printf("IMAGE 1 == NULL\n");
-        return 0;
-    }
-    image[2] = vc_image_new(image[0]->width, image[0]->height, image[0]->channels, image[0]->levels);
-    if (image[2] == NULL) {
-        printf("IMAGE 2 == NULL\n");
-        return 0;
-    }
-    image[3] = vc_image_new(image[0]->width, image[0]->height, image[0]->channels, image[0]->levels);
-    if (image[3] == NULL) {
-        printf("IMAGE 3 == NULL\n");
-        return 0;
-    }
-    image[4] = vc_image_new(image[0]->width, image[0]->height, image[0]->channels, image[0]->levels);
-    if (image[4] == NULL) {
-        printf("IMAGE 4 == NULL\n");
-        return 0;
-    }
-    image[5] = vc_image_new(image[0]->width, image[0]->height, image[0]->channels, image[0]->levels);
-    if (image[5] == NULL) {
-        printf("IMAGE 5 == NULL\n");
-        return 0;
-    }
-    image[6] = vc_image_new(image[0]->width, image[0]->height, image[0]->channels, image[0]->levels);
-    if (image[6] == NULL) {
-        printf("IMAGE 6 == NULL\n");
-        return 0;
+    // All images have the same specs as image 0
+    for (int i = 1; i < image_quant; i++) {
+        image[i] = NEWIMAGE(image[0]);
+        if (image[i] == NULL) {
+            printf("IMAGE %d == NULL\n", i);
+            return 0;
+        }
     }
 
     // Converts the original gray image[0] (Head Magnetic resonance) to black and white image[1]
-    if (!vc_gray_to_binary(image[0], image[1], 74)) {
+    if (!vc_gray_to_binary(image[0], image[1], 64)) {
         printf("Gray to Binary == NULL\n");
         return 0;
     }
@@ -146,7 +127,7 @@ int P1() {
 //    vc_write_image("../P1/Output/P13.pgm", image[3]);
 //    vc_write_image("../P1/Output/P14.pgm", image[4]);
     vc_write_image("../P1/Output/P1.pgm", image[5]);
-    for (int i = 0; i <= 6; i++)
+    for (int i = 0; i < image_quant; i++)
         vc_image_free(image[i]);
     system("cmd /c start ..\\FilterGear.exe ../P1/img1.pgm");
 //    system("cmd /c start ..\\FilterGear.exe ../P1/Output/P11.pgm");
@@ -158,7 +139,8 @@ int P1() {
 }
 
 int P2() {
-    IVC *image[9];
+    int image_quant = 9;
+    IVC *image[image_quant];
     image[0] = vc_read_image("../P2/img2.ppm");
     if (image[0] == NULL) {
         printf("IMAGE 0 == NULL\n");
@@ -169,37 +151,16 @@ int P2() {
         printf("IMAGE 1 == NULL\n");
         return 0;
     }
-    image[2] = vc_image_new(image[0]->width, image[0]->height, 1, image[0]->levels);
-    if (image[2] == NULL) {
-        printf("IMAGE 2 == NULL\n");
-        return 0;
+    // Images 2 to 7 have the same specs
+    for (int i = 2; i <= 7; i++) {
+        image[i] = vc_image_new(image[0]->width, image[0]->height, 1, image[0]->levels);
+        if (image[i] == NULL) {
+            printf("IMAGE %d == NULL\n", i);
+            return 0;
+        }
     }
-    image[3] = vc_image_new(image[0]->width, image[0]->height, 1, image[0]->levels);
-    if (image[3] == NULL) {
-        printf("IMAGE 3 == NULL\n");
-        return 0;
-    }
-    image[4] = vc_image_new(image[0]->width, image[0]->height, 1, image[0]->levels);
-    if (image[4] == NULL) {
-        printf("IMAGE 4 == NULL\n");
-        return 0;
-    }
-    image[5] = vc_image_new(image[0]->width, image[0]->height, 1, image[0]->levels);
-    if (image[5] == NULL) {
-        printf("IMAGE 5 == NULL\n");
-        return 0;
-    }
-    image[6] = vc_image_new(image[0]->width, image[0]->height, 1, image[0]->levels);
-    if (image[6] == NULL) {
-        printf("IMAGE 6 == NULL\n");
-        return 0;
-    }
-    image[7] = vc_image_new(image[0]->width, image[0]->height, 1, image[0]->levels);
-    if (image[7] == NULL) {
-        printf("IMAGE 7 == NULL\n");
-        return 0;
-    }
-    image[8] = vc_image_new(image[0]->width, image[0]->height, image[0]->channels, image[0]->levels);
+    // Image 8 has the same specs as image 0
+    image[8] = NEWIMAGE(image[0]);
     if (image[8] == NULL) {
         printf("IMAGE 8 == NULL\n");
         return 0;
@@ -284,7 +245,7 @@ int P2() {
 //    vc_write_image("../P2/Output/P25.pgm", image[5]);
 //    vc_write_image("../P2/Output/P26.pgm", image[6]);
     vc_write_image("../P2/Output/P2.ppm", image[8]);
-    for (int i = 0; i <= 8; i++)
+    for (int i = 0; i < image_quant; i++)
         vc_image_free(image[i]);
     system("cmd /c start ..\\FilterGear.exe ../P2/img2.ppm");
 //    system("cmd /c start ..\\FilterGear.exe ../P2/Output/P21.pgm");
