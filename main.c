@@ -179,7 +179,7 @@ int P2() {
     }
 
     // Converts the gray image[2] to black and white image[3]
-    if (!vc_gray_to_binary(image[2], image[3], 83)) {
+    if (!vc_gray_to_binary(image[2], image[3], 73)) {
         printf("Gray to Binary == NULL\n");
         return 0;
     }
@@ -212,7 +212,6 @@ int P2() {
         return 0;
     }
 
-
     // Counts the objects of the image[6] to a new labeled image[7]
     int n_labels;
     OVC *blobs = vc_binary_blob_labelling(image[6], image[7], &n_labels);
@@ -239,7 +238,6 @@ int P2() {
     }
 
 //    vc_write_image("../P2/Output/P21.pgm", image[1]);
-//    vc_write_image("../P2/Output/P22.pgm", image[2]);
 //    vc_write_image("../P2/Output/P23.pgm", image[3]);
 //    vc_write_image("../P2/Output/P24.pgm", image[4]);
 //    vc_write_image("../P2/Output/P25.pgm", image[5]);
