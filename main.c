@@ -1,5 +1,5 @@
 //
-// Created by Helder Carvalho, Leandro Faria and João Castro on 13/04/2021.
+// Created by Helder Carvalho and Leandro Faria on 13/04/2021.
 //
 
 #include <stdio.h>
@@ -17,8 +17,8 @@ int main() {
     int op;
     do {
         system("@cls||clear");
-        printf("===================== VC TP1 ====================\n");
-        printf("= Helder Carvalho | Leandro Faria | Joao Castro =\n");
+        printf("============= VC TP1 ==============\n");
+        printf("= Helder Carvalho | Leandro Faria =\n");
         printf("\nChoose an option:\n");
         printf("1 - P1\n");
         printf("2 - P2\n");

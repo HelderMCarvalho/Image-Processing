@@ -48,7 +48,7 @@ IVC *vc_read_image(char *filename);
 int vc_write_image(char *filename, IVC *image);
 
 //
-// Created by Helder Carvalho, Leandro Faria and João Castro on 13/04/2021.
+// Created by Helder Carvalho and Leandro Faria on 13/04/2021.
 //
 
 // FUNCTIONS GRAY
