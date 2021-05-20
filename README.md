@@ -1,14 +1,12 @@
-# TP1-VC
+# Computer Vision image processing
+Process images to isolate objects.
 
-Trabalho Prático 1 de VC
-
-## Run (Windows)
-
-1. Install MinGW and CMake;
-2. Run `<CMakeInstallationPath>\cmake.exe --build <projectPath>\cmake-build-debug --target TP1`;
-3. Execute `<projectPath>\cmake-build-debug\TP1.exe`;
+## Run
+Use Cmake.
 
 ## Image 1
+Extract Brain
+
 ![Original image](https://i.imgur.com/PTxm23L.jpg)
 ![Binary image](https://imgur.com/VNEGNka.jpg)
 ![Erode image](https://imgur.com/FKCt5C7.jpg)
@@ -17,6 +15,8 @@ Trabalho Prático 1 de VC
 ![Final image](https://imgur.com/sZcBouT.jpg)
 
 ## Image 2
+Extract Cell Cores
+
 ![Original image](https://imgur.com/WVXqFlI.jpg)
 ![Blue to gray image](https://imgur.com/Dbzs6iH.jpg)
 ![Binary image](https://imgur.com/7XEDva0.jpg)
